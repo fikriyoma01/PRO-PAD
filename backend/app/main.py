@@ -8,11 +8,11 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(title=settings.APP_NAME)
 
-# ---- CORS: izinkan semua port localhost/127.0.0.1 ----
+# ---- CORS: izinkan semua origin (untuk development) ----
+# Di production, sebaiknya diganti dengan origin spesifik dari env var
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],  # kosongkan kalau pakai regex
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?$",  # semua port
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

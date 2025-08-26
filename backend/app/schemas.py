@@ -30,17 +30,14 @@ class ForecastPoint(BaseModel):
     nilai: float
 
 
-class ExplainItem(BaseModel):
-    jenis_pajak: str
-    formula: str
-    components: Dict[str, float]  # contoh: {"base": ..., "macro": ..., "policy": ...}
+class ForecastMeta(BaseModel):
+    assumptions: Dict[str, Any] = Field(default_factory=dict)
+    model_weights: Dict[str, float] = Field(default_factory=dict)
+    backtest: Dict[str, Any] = Field(default_factory=dict)
+    interval: Dict[str, Any] = Field(default_factory=dict)
 
 
 class ForecastResponse(BaseModel):
     run_id: str
-    scenario_id: Optional[str] = None
-    points: List[ForecastPoint]                     # agregat tahunan per jenis
-    monthly: List[ForecastPoint] = []              # 12 bulan per jenis
-    explain: List[ExplainItem] = []                # transparansi model
-    params_snapshot: Dict[str, Any] = {}           # parameter yang dipakai
-    overrides_applied: Dict[str, Any] = {}         # overrides skenario
+    points: List[ForecastPoint]
+    meta: Optional[ForecastMeta] = None

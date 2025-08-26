@@ -162,40 +162,7 @@ def seed_parameters_core(conn):
 
 def seed_optional_domain_tables(conn):
     # Tabel mock untuk sumber data eksternal/operasional (tidak mengganggu engine)
-    ensure_table(conn, """
-    CREATE TABLE IF NOT EXISTS vehicle_targets (
-      year int PRIMARY KEY,
-      target_r4 int NOT NULL,
-      target_r2 int NOT NULL
-    );""")
-    ensure_table(conn, """
-    CREATE TABLE IF NOT EXISTS bbm_volume (
-      year int,
-      produk text,
-      volume_kl numeric,
-      PRIMARY KEY (year, produk)
-    );""")
-    ensure_table(conn, """
-    CREATE TABLE IF NOT EXISTS rokok_allocation (
-      year int PRIMARY KEY,
-      alokasi_idr numeric
-    );""")
-    ensure_table(conn, """
-    CREATE TABLE IF NOT EXISTS pap_skpd (
-      year int,
-      month int,
-      nilai_idr numeric,
-      PRIMARY KEY (year, month)
-    );""")
-    ensure_table(conn, """
-    CREATE TABLE IF NOT EXISTS realisasi_bulanan (
-      year int,
-      month int,
-      jenis_pajak text, -- PKB/BBNKB/PBBKB/PAP/ROKOK
-      nilai_idr numeric,
-      PRIMARY KEY (year, month, jenis_pajak)
-    );""")
-
+    # DDLs removed, should be managed by Alembic.
     # Isi data target kendaraan (mirror parameter di atas)
     for y in YEARS:
         conn.execute(
@@ -271,29 +238,21 @@ def seed_optional_domain_tables(conn):
                     {"y": y, "m": m, "j": j, "v": v}
                 )
 
+    # Aggregate monthly data to annual data for the new table
+    print("Aggregating monthly data to annual...")
+    conn.execute(text("""
+    INSERT INTO realisasi_tahunan (tahun, jenis_pajak, nilai)
+    SELECT "year" AS tahun, jenis_pajak, SUM(nilai_idr) AS nilai
+    FROM realisasi_bulanan
+    GROUP BY "year", jenis_pajak
+    ON CONFLICT (tahun, jenis_pajak) DO UPDATE SET
+      nilai = EXCLUDED.nilai;
+    """))
+
 def main():
     print(f"Connecting to {DATABASE_URL}")
     with engine.begin() as conn:
-        # pastikan tabel inti ada (sesuai skema backend Anda)
-        conn.execute(text("""
-        CREATE TABLE IF NOT EXISTS parameters (
-          param_key text PRIMARY KEY,
-          value_num numeric NULL,
-          value_text text NULL,
-          unit text NULL,
-          source text NULL,
-          owner text NULL,
-          min_val numeric NULL,
-          max_val numeric NULL
-        );"""))
-        conn.execute(text("""
-        CREATE TABLE IF NOT EXISTS scenarios (
-          scenario_id text PRIMARY KEY,
-          name text NOT NULL,
-          description text NULL,
-          overrides_json text NULL
-        );"""))
-
+        # CREATE TABLE statements are removed. Alembic is responsible for schema management.
         print("Seeding scenarios…")
         seed_scenarios(conn)
         print("Seeding parameter registry…")

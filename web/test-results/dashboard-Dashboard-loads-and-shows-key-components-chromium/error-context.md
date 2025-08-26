@@ -1,0 +1,124 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - heading "PRO-PAD" [level=1] [ref=e5]
+      - navigation [ref=e6]:
+        - button "Dashboard" [ref=e7] [cursor=pointer]
+        - button "Workspace" [ref=e8] [cursor=pointer]
+        - button "Admin" [ref=e9] [cursor=pointer]
+    - main [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - generic [ref=e13]:
+            - generic [ref=e14]: Tahun
+            - spinbutton [ref=e15]: "2026"
+          - generic [ref=e16]:
+            - generic [ref=e17]: Skenario
+            - combobox [ref=e18]:
+              - option "baseline" [selected]
+          - generic [ref=e20]:
+            - link "Unduh PDF" [ref=e21] [cursor=pointer]:
+              - /url: /api/reports/apbd?year=2026&format=pdf&scenario_id=baseline
+            - link "Unduh XLSX" [ref=e22] [cursor=pointer]:
+              - /url: /api/reports/apbd?year=2026&format=xlsx&scenario_id=baseline
+            - link "Unduh CSV" [ref=e23] [cursor=pointer]:
+              - /url: /api/reports/apbd?year=2026&format=csv&scenario_id=baseline
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - generic [ref=e26]: Total Baseline
+            - generic [ref=e27]: "0"
+            - generic [ref=e28]: Forecast 2026
+          - generic [ref=e29]:
+            - generic [ref=e30]: Total baseline
+            - generic [ref=e31]: "0"
+            - generic [ref=e32]: Forecast 2026
+          - generic [ref=e33]:
+            - generic [ref=e34]: Delta vs Baseline
+            - generic [ref=e35]: "0"
+            - generic [ref=e36]: (Skenario - Baseline)
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e39]: Komposisi Proyeksi per Jenis Pajak
+            - generic [ref=e42]:
+              - img [ref=e43]
+              - list [ref=e45]:
+                - listitem [ref=e46]:
+                  - img [ref=e47]
+                  - generic [ref=e49]: PKB
+                - listitem [ref=e50]:
+                  - img [ref=e51]
+                  - generic [ref=e53]: BBNKB
+                - listitem [ref=e54]:
+                  - img [ref=e55]
+                  - generic [ref=e57]: PBBKB
+                - listitem [ref=e58]:
+                  - img [ref=e59]
+                  - generic [ref=e61]: PAP
+                - listitem [ref=e62]:
+                  - img [ref=e63]
+                  - generic [ref=e65]: ROKOK
+          - generic [ref=e66]:
+            - generic [ref=e67]: Perbandingan Baseline vs Skenario
+            - generic [ref=e70]:
+              - img [ref=e71]:
+                - generic [ref=e73]:
+                  - generic [ref=e76]: PKB
+                  - generic [ref=e79]: BBNKB
+                  - generic [ref=e82]: PBBKB
+                  - generic [ref=e85]: PAP
+                  - generic [ref=e88]: ROKOK
+                - generic [ref=e90]:
+                  - generic [ref=e93]: "0"
+                  - generic [ref=e96]: "1"
+                  - generic [ref=e99]: "2"
+                  - generic [ref=e102]: "3"
+                  - generic [ref=e105]: "4"
+              - list [ref=e107]:
+                - listitem [ref=e108]:
+                  - img [ref=e109]
+                  - generic [ref=e111]: baseline
+                - listitem [ref=e112]:
+                  - img [ref=e113]
+                  - generic [ref=e115]: scenario
+        - generic [ref=e116]:
+          - generic [ref=e117]: Variance Waterfall (Total)
+          - generic [ref=e118]: "Total Baseline: 0 → Total Skenario: 0 (Δ 0)"
+          - img [ref=e122]
+        - generic [ref=e130]:
+          - generic [ref=e131]: Peta (Dummy) — Distribusi Per Kab/Kota
+          - img [ref=e132]:
+            - generic [ref=e137]: Surabaya
+            - generic [ref=e140]: Sidoarjo
+            - generic [ref=e143]: Gresik
+            - generic [ref=e146]: Mojokerto
+            - generic [ref=e149]: Jombang
+            - generic [ref=e152]: Lamongan
+            - generic [ref=e155]: Bojonegoro
+            - generic [ref=e158]: Tuban
+            - generic [ref=e161]: Malang
+            - generic [ref=e164]: Batu
+            - generic [ref=e167]: Pasuruan
+            - generic [ref=e170]: Probolinggo
+            - generic [ref=e173]: Situbondo
+            - generic [ref=e176]: Bondowoso
+            - generic [ref=e179]: Jember
+            - generic [ref=e182]: Lumajang
+            - generic [ref=e185]: Banyuwangi
+            - generic [ref=e188]: Madiun
+            - generic [ref=e191]: Magetan
+            - generic [ref=e194]: Ngawi
+            - generic [ref=e197]: Ponorogo
+            - generic [ref=e200]: Trenggalek
+            - generic [ref=e203]: Tulungagung
+            - generic [ref=e206]: Kediri
+            - generic [ref=e209]: Blitar
+            - generic [ref=e212]: Sampang
+            - generic [ref=e215]: Pamekasan
+            - generic [ref=e218]: Sumenep
+            - generic [ref=e221]: Bangkalan
+            - generic [ref=e224]: Semakin besar lingkaran → nilai dummy lebih tinggi
+  - generic [ref=e225]: "0"
+```
