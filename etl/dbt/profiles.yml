@@ -1,0 +1,11 @@
+propad:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: db
+      user: propad
+      password: propad
+      dbname: propad
+      port: 5432
+      schema: analytics

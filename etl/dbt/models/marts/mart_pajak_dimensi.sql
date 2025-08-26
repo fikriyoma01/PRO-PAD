@@ -1,0 +1,1 @@
+select distinct jenis_pajak from analytics.stg_realisasi_pajak

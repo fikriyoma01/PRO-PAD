@@ -1,0 +1,6 @@
+apache-airflow==2.9.2
+psycopg[binary]
+dbt-postgres
+great-expectations
+pandas
+requests

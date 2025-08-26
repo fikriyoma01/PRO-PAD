@@ -1,0 +1,1 @@
+from .deterministic import forecast_next_year_deterministic

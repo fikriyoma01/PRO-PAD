@@ -1,0 +1,7 @@
+name: propad_dbt
+version: 1.0.0
+profile: propad
+model-paths: ["models"]
+models:
+  propad_dbt:
+    +materialized: table

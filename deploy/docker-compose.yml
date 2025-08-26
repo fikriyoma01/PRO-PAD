@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: propad
+      POSTGRES_PASSWORD: propad
+      POSTGRES_DB: propad
+    ports: ["55432:5432"]   # <— ganti host port ke 55432
+    volumes: ["dbdata:/var/lib/postgresql/data"]
+
+  api:
+    build:
+      context: ../
+      dockerfile: deploy/Dockerfile.api
+    environment:
+      DATABASE_URL: postgresql+psycopg://propad:propad@db:5432/propad
+    ports: ["8000:8000"]
+    depends_on: [db]
+
+  web:
+    build:
+      context: ../web
+      dockerfile: Dockerfile.web
+    ports: ["5173:80"]
+    depends_on: [api]
+
+volumes:
+  dbdata:
