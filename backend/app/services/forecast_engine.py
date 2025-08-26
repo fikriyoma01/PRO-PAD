@@ -1,58 +1,49 @@
-# backend/app/services/forecast_engine.py
 from __future__ import annotations
-from datetime import date
+from typing import Dict, Any, Optional
+import pandas as pd
+from sqlalchemy.orm import Session
 
-TAXES = ["PKB", "BBNKB", "PBBKB", "PAP", "ROKOK"]
+# The new entrypoint from our forecasting package
+from propad_forecasting import generate_forecast
 
-def _p(params: dict, overrides: dict | None, key: str, default=None):
-    """Ambil parameter: prioritas overrides (dari scenario), lalu params (registry)."""
-    if overrides and key in overrides:
-        return overrides[key]
-    return params.get(key, default)
+from ..models import RealisasiTahunan
 
-def _collect_dict(params: dict, overrides: dict | None, prefix: str, defaults: dict[str, float]):
-    out = {}
-    for k in TAXES:
-        out[k] = float(_p(params, overrides, f"{prefix}.{k}", defaults.get(k, 1.0)) or 0.0)
-    return out
-
-def run_forecast(target_year: int, params: dict, overrides: dict | None = None):
+def run_forecast(
+    target_year: int,
+    params: dict,
+    overrides: Optional[dict],
+    db: Session, # Add db session to fetch historical data
+) -> Dict[str, Any]:
     """
-    Model transparan:
-      1) Total dasar: base_total * (1 + gdp_growth)
-      2) Bagi ke jenis pajak: share.<JENIS>  (dinormalisasi jika tak tepat 1.0)
-      3) Respons growth: (1 + elas.<JENIS> * gdp_growth)
-      4) Kebijakan/multiplier: policy.<JENIS>
-      Nilai akhir per jenis = total * share * respons * policy
+    New forecast engine service.
+    This function acts as a bridge between the API layer and the forecasting package.
+    It fetches necessary data from the database and calls the core forecasting logic.
     """
-    base_total = float(_p(params, overrides, "base_total", 3_200_000_000_000) or 0.0)
-    g = float(_p(params, overrides, "gdp_growth", 0.05) or 0.0)
 
-    shares = _collect_dict(params, overrides, "share",
-                           {"PKB":0.34,"BBNKB":0.27,"PBBKB":0.22,"PAP":0.07,"ROKOK":0.10})
-    elas   = _collect_dict(params, overrides, "elas",
-                           {"PKB":1.10,"BBNKB":0.95,"PBBKB":0.85,"PAP":0.70,"ROKOK":0.60})
-    policy = _collect_dict(params, overrides, "policy",
-                           {k:1.00 for k in TAXES})
+    # 1. Fetch historical data from the database
+    # This query will be executed by the caller (the router)
+    historical_query = db.query(
+        RealisasiTahunan.tahun,
+        RealisasiTahunan.jenis_pajak,
+        RealisasiTahunan.nilai
+    ).all()
 
-    # normalisasi share jika tidak pas = 1
-    ssum = sum(shares.values()) or 1.0
-    shares = {k: v/ssum for k, v in shares.items()}
+    # Convert to pandas DataFrame
+    if historical_query:
+        hist_df = pd.DataFrame(historical_query, columns=['tahun', 'jenis_pajak', 'nilai'])
+    else:
+        hist_df = pd.DataFrame(columns=['tahun', 'jenis_pajak', 'nilai'])
 
-    # total annual one-step-ahead
-    total = base_total * (1.0 + g)
+    # 2. Call the forecasting package orchestrator
+    # The orchestrator now handles everything: model execution, averaging, reconciliation.
+    forecast_result = generate_forecast(
+        target_year=target_year,
+        params=params,
+        overrides=overrides,
+        hist_data=hist_df
+    )
 
-    # hitung nilai per jenis
-    rows = []
-    model_name = "Transparent-Elasticity-v1"
-    for k in TAXES:
-        respons = (1.0 + elas[k]*g)
-        nilai = total * shares[k] * respons * policy[k]
-        rows.append({
-            "periode": date(target_year, 12, 31),
-            "jenis_pajak": k,
-            "nilai": float(round(nilai, 2)),
-            "model": model_name
-        })
-
-    return rows
+    # 3. Return the structured result
+    # The format from generate_forecast should already match what the API router expects
+    # (an object with 'annual' and 'meta' keys).
+    return forecast_result

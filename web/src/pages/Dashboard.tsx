@@ -6,10 +6,8 @@ import CompositionDonut from "../components/CompositionDonut";
 import CompareBars from "../components/CompareBars";
 import DownloadReport from "../components/DownloadReport";
 import JatimMap from "../components/JatimMap";
-import MonthlyTrend from "../components/MonthlyTrend";
-import ExplainPanel from "../components/ExplainPanel";
-import ParamSnapshot from "../components/ParamSnapshot";
 import VarianceWaterfall from "../components/VarianceWaterfall";
+import AssumptionCard from "../components/AssumptionCard";
 
 function sum(points: ForecastPoint[]) { return points.reduce((a,b)=>a+b.nilai,0); }
 
@@ -61,13 +59,12 @@ export default function Dashboard(){
         scenario={resp?.points?.length ? resp.points : baseline}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <MonthlyTrend monthly={resp?.monthly || []}/>
-        <JatimMap seed={year} />
-      </div>
+      <AssumptionCard meta={resp?.meta} />
 
-      <ExplainPanel items={resp?.explain || []} />
-      <ParamSnapshot snapshot={resp?.params_snapshot || {}} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <JatimMap seed={year} />
+        {/* Placeholder for another chart if needed */}
+      </div>
     </div>
   );
 }

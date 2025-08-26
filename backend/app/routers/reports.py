@@ -24,7 +24,10 @@ def apbd_report(year: int, format: str = "pdf", scenario_id: str | None = None, 
         else:
             raise HTTPException(404, "Scenario not found")
 
-    rows = run_forecast(year, params, overrides)
+    # run_forecast now needs the db session and returns a dict
+    forecast_result = run_forecast(year, params, overrides, db)
+    rows = forecast_result.get("annual", [])
+
     if format.lower() == "pdf":
         pdf_bytes = build_pdf_report({"year": year, "scenario": scenario_name, "rows": rows})
         return StreamingResponse(io.BytesIO(pdf_bytes), media_type="application/pdf",
@@ -42,7 +45,8 @@ def apbd_report(year: int, format: str = "pdf", scenario_id: str | None = None, 
         writer.writerow(["periode","jenis_pajak","nilai"])
         for r in rows:
             writer.writerow([r["periode"], r["jenis_pajak"], float(r["nilai"])])
-        data = buf.getvalue().encode("utf-8")
+        # Encode with utf-8-sig to include BOM for Excel compatibility
+        data = buf.getvalue().encode("utf-8-sig")
         return StreamingResponse(_io.BytesIO(data), media_type="text/csv",
                                  headers={"Content-Disposition": f"attachment; filename=report_apbd_{year}_{scenario_name}.csv"})
     else:

@@ -17,20 +17,18 @@ export interface ForecastPoint {
   nilai: number;
 }
 
-export interface ExplainItem {
-  jenis_pajak: string;
-  formula: string;
-  components: Record<string, number>; // base, macro_effect, policy_effect, final
+export interface ForecastMeta {
+  assumptions: Record<string, any>;
+  model_weights: Record<string, number>;
+  backtest: Record<string, any>;
+  interval: Record<string, any>;
+  reconciliation: Record<string, any>;
 }
 
 export interface ForecastResponse {
   run_id: string;
-  scenario_id?: string;
   points: ForecastPoint[];
-  monthly: ForecastPoint[];
-  explain: ExplainItem[];
-  params_snapshot: Record<string, any>;
-  overrides_applied: Record<string, any>;
+  meta?: ForecastMeta;
 }
 
 export interface ParameterItem {
